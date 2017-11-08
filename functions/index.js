@@ -145,7 +145,7 @@ exports.pushNotificaCuidadorRemedio = functions.database.ref('/alertaRemedio/{id
             admin.database().ref('idosos/' + idosoId + '/cuidadores').once('value', (cuidadoresSnapshot) => {
                 var cuidadores = [];
                 cuidadoresSnapshot.forEach(function(child) {
-                    console.log(child);
+                    console.log(child.key);
                     cuidadores.push("'" + child.key + "' in topics");
                 });
                 var condition = cuidadores.join(" || ");
