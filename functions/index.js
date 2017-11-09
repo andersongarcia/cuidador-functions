@@ -137,7 +137,33 @@ exports.pushNotificaCuidadorRemedio = functions.database.ref('/alertaRemedio/{id
         timeToLive: 60 * 60 * 24
     };
 
-    admin.database().ref('remedios/' + idosoId + '/' + remedioId).once('value', (snapshot) => {
+    return admin.database().ref('idosos/' + idosoId + '/cuidadores').once('value', (cuidadoresSnapshot) => {
+        var cuidadores = [];
+        cuidadoresSnapshot.forEach(function(child) {
+            console.log(child.key);
+            cuidadores.push("'" + child.key + "' in topics");
+        });
+        var condition = cuidadores.join(" || ");
+        console.log(condition);
+        
+        // Cria um payload de dados
+        const payload = {
+            notification: {
+                title: 'Confirmar medicação',
+                sound: "default",
+                click_action: 'CONFIRMA_REMEDIO'
+            },
+            data: {
+                label: 'alertaRemedio',   // identifica destino da mensagem
+                remedioId: remedioId,
+                idosoId: idosoId
+            },
+        };
+
+        return admin.messaging().sendToCondition(condition, payload, options);
+    });
+
+    /*admin.database().ref('remedios/' + idosoId + '/' + remedioId).once('value', (snapshot) => {
         var remedio = snapshot.val();
         console.log('Remédio: ' + remedio);
         admin.database().ref('contatos/' + idosoId).once('value', (idosoSnapshot) => {
@@ -162,5 +188,5 @@ exports.pushNotificaCuidadorRemedio = functions.database.ref('/alertaRemedio/{id
                 return admin.messaging().sendToCondition(condition, payload, options);
             });
         });
-    });
+    });*/
 });
